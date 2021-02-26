@@ -1,0 +1,89 @@
+module cn #(parameter N1 = 10,N2 = 6,N3 = 10,N4 = 6,N5=4,N6=3, data_width = 4, data_width1 = 4)
+(input clk,rst,output reg[(data_width-1):0] min_m,min_l,output reg[(data_width-1):0] out1,out2,output reg[(data_width1-1):0] hr_m,hr_l);
+  
+  always@(posedge clk)
+    begin
+      if(rst)
+  begin
+        out1<={data_width{1'b0}};
+        out2<={data_width{1'b0}};
+		min_m<={data_width{1'b0}};
+        min_l<={data_width{1'b0}};
+        hr_m<={data_width1{1'b0}};
+        hr_l<={data_width1{1'b0}};
+end      
+else if( out1 == (N1-1) )   
+     out1<={data_width{1'b0}};
+	  else
+        out1<=out1+1'b1;
+
+  if( out1 == (N1-1) )
+     if( out2 == (N2-1) )
+      		
+						  out2<={data_width{1'b0}};   
+else
+                    out2<=out2+1'b1;
+
+  if(out2 == N2-1 && out1 == N1-1)
+    min_l <= min_l+1'b1;
+      if(min_l == N3-1 && out2 == N2-1 && out1 == N1-1)
+        min_l<={data_width{1'b0}};
+      if (min_l == N3-1 && out2 == N2-1 && out1 == N1-1)
+        	  min_m <= min_m+1'b1;
+      if (min_m == N2-1 && min_l == N3-1 && out2 == N2-1 && out1 == N1-1)
+         min_m<={data_width{1'b0}};
+      if (hr_l < 9  && min_m == N2-1 && min_l == N3-1 && out2 == N2-1 && out1 == N1-1)    
+            hr_l<=hr_l+1'b1;
+      if (hr_l == 9  && min_m == N2-1 && min_l == N3-1 && out2 == N2-1 && out1 == N1-1)      
+         hr_m<=hr_m+1'b1;
+      if (hr_l == 9  && min_m == N2-1 && min_l == N3-1 && out2 == N2-1 && out1 == N1-1)
+        hr_l<={data_width1{1'b0}};
+      if (hr_l == (N5-1) && hr_m == (N6-1) && min_m == N2-1 && min_l == N3-1 && out2 == N2-1 && out1 == N1-1)
+        hr_m<={data_width1{1'b0}};
+      if (hr_l == (N5-1) && hr_m == (N6-1) && min_m == N2-1 && min_l == N3-1 && out2 == N2-1 && out1 == N1-1)
+        hr_l<={data_width1{1'b0}};
+       end
+endmodule
+	  
+	  
+	  
+
+	  
+`timescale 1ns / 1ps	  
+module t1;
+
+	// Inputs
+	reg clk;
+	reg rst;
+
+	// Outputs
+	wire [3:0] min_m;
+	wire [3:0] min_l;
+	wire [3:0] out1;
+	wire [3:0] out2;
+        wire [3:0] hr_m,hr_l;
+	// Instantiate the Unit Under Test (UUT)
+	cn uut (
+		.clk(clk), 
+		.rst(rst), 
+		.min_m(min_m), 
+		.min_l(min_l), 
+		.out1(out1), 
+      .out2(out2),
+      .hr_m(hr_m),
+      .hr_l(hr_l)
+	);
+
+	initial begin
+		// Initialize Input
+            clk=0;
+forever #5 clk=~clk;
+end
+initial begin
+rst=1;
+#10;
+rst=0;
+end
+initial
+  $monitor("%d%d:%d%d:%d%d",hr_m,hr_l,min_m,min_l,out2,out1);     
+endmodule

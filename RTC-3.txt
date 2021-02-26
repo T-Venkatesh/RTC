@@ -1,0 +1,45 @@
+
+module RTC(input CLK,RST,output [6:0] SECL,SECM,MINL,MINM,HRL,HRM);
+wire [3:0] min_m,min_l,out1,out2,hr_m,hr_l;
+
+cn dut(.clk(CLK),.rst(RST),.min_m(min_m),.min_l(min_l),.out1(out1),.out2(out2),.hr_m(hr_m),.hr_l(hr_l));
+
+ BCD27 s1(.A(out1),.D(SECL));
+ BCD27 s2(.A(out2),.D(SECM));
+ BCD27 m3(.A(min_l),.D(MINL));
+ BCD27 m4(.A(min_m),.D(MINM));
+ BCD27 h5(.A(hr_l),.D(HRL));
+ BCD27 h6(.A(hr_m),.D(HRM));
+ 
+endmodule
+
+
+
+module RTC_tb;
+
+reg CLK;
+reg RST;
+
+wire [6:0] SECL;
+wire [6:0] SECM;
+wire [6:0] MINL;
+wire [6:0] MINM;
+wire [6:0] HRL;
+wire [6:0] HRM;
+
+RTC DUT2(CLK,RST,SECL,SECM,MINL,MINM,HRL,HRM);
+
+initial
+begin
+  CLK=0;
+forever #5 CLK=~CLK;
+end
+
+initial begin
+RST=1;
+#10;
+RST=0;
+end
+initial
+  $monitor("%d %d:%d %d:%d %d",SECL,SECM,MINL,MINM,HRL,HRM);     
+endmodule
